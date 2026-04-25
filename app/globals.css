@@ -58,58 +58,6 @@
     @apply text-[10px] uppercase tracking-[0.2em] font-semibold opacity-60;
   }
 
-  /* ─── Scroll reveal animations ─── */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(32px) scale(0.98);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .fade-up.visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  .fade-right {
-    opacity: 0;
-    transform: translateX(40px) scale(0.97);
-    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .fade-right.visible {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-
-  /* Stagger delays — refined spacing */
-  .delay-1 { transition-delay: 0.12s; }
-  .delay-2 { transition-delay: 0.24s; }
-  .delay-3 { transition-delay: 0.36s; }
-  .delay-4 { transition-delay: 0.48s; }
-
-  /* ─── Card hover micro-interactions ─── */
-  .card-lift {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .card-lift:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  .card-press {
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .card-press:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.2);
-  }
-
   /* ─── GPU-accelerated marquee ─── */
   @keyframes marquee {
     0% { transform: translate3d(0, 0, 0); }

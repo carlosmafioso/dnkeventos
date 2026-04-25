@@ -44,18 +44,13 @@ const smoothScroll = (href: string) => {
     if (p < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
-};
+};  
 
-const useScrollReveal = () => {
-  useEffect(() => {
-    const els = document.querySelectorAll('.fade-up, .fade-right');
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-    }, { threshold: 0.1, rootMargin: '-40px' });
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-};
+// Framer Motion shared config
+const ease = [0.16, 1, 0.3, 1] as const;
+const fadeUp = { hidden: { opacity: 0, y: 32 }, visible: { opacity: 1, y: 0 } };
+const fadeRight = { hidden: { opacity: 0, x: 40 }, visible: { opacity: 1, x: 0 } };
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.12 } } };
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -203,7 +198,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#160038] via-[#160038]/95 lg:via-[#160038]/90 to-transparent"></div>
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 w-full grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-12">
-        <div className="flex flex-col gap-4 md:gap-6 order-2 lg:order-1 fade-up">
+        <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.8, ease }} className="flex flex-col gap-4 md:gap-6 order-2 lg:order-1">
           <h1 className="font-headline font-light text-3xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white">
             A nova cultura <br /> universitária <span className="text-secondary font-medium">começa aqui</span>
           </h1>
@@ -218,7 +213,7 @@ const Hero = () => {
               Explorar Projetos
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Floating Logo - Now visible on mobile but smaller */}
         <div className="flex justify-center items-center relative order-1 lg:order-2 animate-float">
@@ -263,7 +258,7 @@ const About = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16">
         {/* Left Side: Content + Cards */}
         <div className="lg:col-span-7 flex flex-col gap-8 md:gap-12">
-          <div className="fade-up">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp} transition={{ duration: 0.7, ease }}>
             <h2 className="font-headline font-light text-3xl md:text-4xl tracking-tight text-surface mb-6">Quem Somos</h2>
             <div className="font-sans text-sm md:text-base text-surface/90 leading-relaxed space-y-4">
               <p>
@@ -273,26 +268,29 @@ const About = () => {
                 Num cenário onde a maioria dos eventos voltados para estudantes perdeu relevância, identidade e consistência, a DINNAMIKUS surge como uma resposta estruturada e estratégica: <span className="font-bold text-surface">não apenas organizar eventos, mas construir uma cultura universitária sólida, escalável e altamente conectada com marcas.</span>
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Stacked Cards under text */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-50px' }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
             {features.map((feature, index) => (
-              <div 
+              <motion.div 
                 key={index}
-                className={`fade-up delay-${index + 1} card-lift p-5 md:p-6 rounded-2xl bg-slate-50 border border-slate-100 group`}
+                variants={fadeUp}
+                transition={{ duration: 0.5, ease }}
+                whileHover={{ y: -6, boxShadow: '0 20px 40px -12px rgba(0,0,0,0.25)' }}
+                className="p-5 md:p-6 rounded-2xl bg-slate-50 border border-slate-100 group cursor-default"
               >
                 <div className="mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">{feature.icon}</div>
                 <h3 className="font-headline font-bold text-sm md:text-base mb-1 md:mb-2 text-surface">{feature.title}</h3>
                 <p className="text-slate-500 text-[10px] md:text-xs leading-relaxed">{feature.description}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Right Side: Visual Element */}
         <div className="lg:col-span-5 h-full min-h-[350px] md:min-h-[500px]">
-          <div className="fade-right relative w-full h-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-2xl group">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeRight} transition={{ duration: 0.8, ease }} className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-2xl group">
             <Image
               src={aboutUs}
               alt="Dinnamikus Team"
@@ -302,7 +300,7 @@ const About = () => {
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-surface/40 to-transparent"></div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -323,16 +321,14 @@ const Fraternities = () => {
   return (
     <section id="fraternidades" className="bg-surface py-16 md:py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10 mb-12 md:mb-16">
-        <div 
-          className="text-center fade-up"
-        >
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.7, ease }} className="text-center">
           <h2 className="font-headline font-light text-2xl md:text-4xl mb-4 text-white">
             UMA FRATERNIDADE. <span className="text-secondary-container font-medium">Uma identidade.</span>
           </h2>
           <p className="text-white/40 text-xs md:text-sm max-w-md mx-auto">
             A elite universitária em movimento perpétuo. Explore as linhagens que definem a nossa cultura.
           </p>
-        </div>
+        </motion.div>
       </div>
 
       <div className="relative flex overflow-hidden">
@@ -387,65 +383,51 @@ const Projects = () => {
   return (
     <section className="bg-white py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-6 md:px-8">
-        <div 
-          className="mb-12 md:mb-16 fade-up"
-        >
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={fadeUp} transition={{ duration: 0.7, ease }} className="mb-12 md:mb-16">
           <h2 className="font-headline font-light text-2xl md:text-4xl text-surface mb-2">
             Muito além de eventos. <br /> <span className="text-secondary-container font-medium">Criamos experiências.</span>
           </h2>
-        </div>
-        <div 
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 md:gap-6"
-        >
+        </motion.div>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-50px' }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 md:gap-6">
           {/* Featured: 1ªAULA */}
-          <div 
-            className="fade-up sm:col-span-2 md:col-span-8 bg-surface rounded-3xl overflow-hidden group relative min-h-[350px] md:min-h-[450px] shadow-2xl flex items-end card-press"
-          >
+          <motion.div variants={fadeUp} transition={{ duration: 0.6, ease }} whileHover={{ y: -4, scale: 1.01 }} className="sm:col-span-2 md:col-span-8 bg-surface rounded-3xl overflow-hidden group relative min-h-[350px] md:min-h-[450px] shadow-2xl flex items-end cursor-default">
             <div className="p-6 md:p-10 relative z-10">
               <span className="micro-label bg-secondary-container text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full mb-3 md:mb-4 inline-block font-bold tracking-widest text-[10px]">Evento Principal</span>
               <h3 className="font-headline font-bold text-2xl md:text-4xl text-white mb-2 md:mb-3 tracking-tight">1ªAULA</h3>
               <p className="text-white/70 text-sm md:text-base max-w-md leading-relaxed">O festival que abre o ano letivo. Onde o conhecimento dá lugar à celebração sensorial e conexões reais.</p>
             </div>
-          </div>
+          </motion.div>
           
           {/* SALA#1 */}
-          <div 
-            className="fade-up delay-1 card-lift md:col-span-4 bg-slate-50 rounded-3xl p-8 md:p-10 flex flex-col justify-between group hover:bg-secondary-container transition-colors duration-300 shadow-sm"
-          >
+          <motion.div variants={fadeUp} transition={{ duration: 0.5, ease }} whileHover={{ y: -6, boxShadow: '0 20px 40px -12px rgba(0,0,0,0.2)' }} className="md:col-span-4 bg-slate-50 rounded-3xl p-8 md:p-10 flex flex-col justify-between group hover:bg-secondary-container transition-colors duration-300 shadow-sm cursor-default">
             <span className="font-headline font-bold text-5xl md:text-7xl text-surface/5 -ml-1 -mt-2 group-hover:text-white/10 transition-colors">01</span>
             <div>
               <h3 className="font-headline font-bold text-xl md:text-2xl text-surface group-hover:text-white mb-2">SALA#1</h3>
               <p className="text-slate-400 text-xs md:text-sm group-hover:text-white/80 leading-relaxed">Workshop imersivo de produção criativa e gestão de carreira universitária.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* LAB#1 */}
-          <div 
-            className="fade-up delay-2 card-lift md:col-span-4 bg-slate-50 rounded-3xl p-8 md:p-10 flex flex-col justify-between group hover:bg-surface transition-colors duration-300 shadow-sm"
-          >
+          <motion.div variants={fadeUp} transition={{ duration: 0.5, ease }} whileHover={{ y: -6, boxShadow: '0 20px 40px -12px rgba(0,0,0,0.2)' }} className="md:col-span-4 bg-slate-50 rounded-3xl p-8 md:p-10 flex flex-col justify-between group hover:bg-surface transition-colors duration-300 shadow-sm cursor-default">
             <span className="font-headline font-bold text-5xl md:text-7xl text-surface/5 -ml-1 -mt-2 group-hover:text-white/10 transition-colors">02</span>
             <div>
               <h3 className="font-headline font-bold text-xl md:text-2xl text-surface group-hover:text-white mb-2">LAB#1</h3>
               <p className="text-slate-400 text-xs md:text-sm group-hover:text-white/80 leading-relaxed">Laboratório de ideias disruptivas para startups e projetos universitários.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* AUDITÓRIO */}
-          <div 
-            className="fade-up delay-3 card-lift md:col-span-4 bg-slate-50 rounded-3xl p-8 md:p-10 flex flex-col justify-between group hover:bg-primary-container transition-colors duration-300 shadow-sm"
-          >
+          <motion.div variants={fadeUp} transition={{ duration: 0.5, ease }} whileHover={{ y: -6, boxShadow: '0 20px 40px -12px rgba(0,0,0,0.2)' }} className="md:col-span-4 bg-slate-50 rounded-3xl p-8 md:p-10 flex flex-col justify-between group hover:bg-primary-container transition-colors duration-300 shadow-sm cursor-default">
             <span className="font-headline font-bold text-5xl md:text-7xl text-surface/5 -ml-1 -mt-2 group-hover:text-white/10 transition-colors">03</span>
             <div>
               <h3 className="font-headline font-bold text-xl md:text-2xl text-surface group-hover:text-white mb-2">AUDITÓRIO</h3>
               <p className="text-slate-400 text-xs md:text-sm group-hover:text-white/80 leading-relaxed">Ciclo de conferências exclusivas com líderes e visionários globais.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* ÁTRIO & CÓDIGO */}
-          <div 
-            className="fade-up delay-4 md:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 md:grid-rows-2 gap-4 md:gap-6"
-          >
-            <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 md:p-8 flex items-center gap-4 md:gap-5 card-press">
+          <motion.div variants={fadeUp} transition={{ duration: 0.5, ease }} className="md:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 md:grid-rows-2 gap-4 md:gap-6">
+            <motion.div whileHover={{ y: -4, scale: 1.02 }} className="bg-slate-50 border border-slate-100 rounded-3xl p-6 md:p-8 flex items-center gap-4 md:gap-5 cursor-default">
               <div className="p-2.5 md:p-3 bg-secondary-container/10 rounded-xl">
                 <DraftingCompass className="w-5 h-5 md:w-6 md:h-6 text-secondary-container" />
               </div>
@@ -453,8 +435,8 @@ const Projects = () => {
                 <h4 className="font-headline font-bold text-base md:text-lg text-surface">ÁTRIO</h4>
                 <p className="text-[10px] text-slate-400">Exposição curada de arte digital.</p>
               </div>
-            </div>
-            <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 md:p-8 flex items-center gap-4 md:gap-5 card-press">
+            </motion.div>
+            <motion.div whileHover={{ y: -4, scale: 1.02 }} className="bg-slate-50 border border-slate-100 rounded-3xl p-6 md:p-8 flex items-center gap-4 md:gap-5 cursor-default">
               <div className="p-2.5 md:p-3 bg-primary/10 rounded-xl">
                 <Terminal className="w-5 h-5 md:w-6 md:h-6 text-primary" />
               </div>
@@ -462,9 +444,9 @@ const Projects = () => {
                 <h4 className="font-headline font-bold text-base md:text-lg text-surface">CÓDIGO</h4>
                 <p className="text-[10px] text-slate-400">Hackathon intensivo de 48 horas.</p>
               </div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
@@ -479,7 +461,14 @@ const Partners = () => {
   return (
     <section id="parceiros" className="bg-surface py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 md:px-8 mb-12 md:mb-16">
-        <div className="max-w-2xl">
+        <motion.div 
+          initial="hidden" 
+          whileInView="visible" 
+          viewport={{ once: true }} 
+          variants={fadeUp} 
+          transition={{ duration: 0.7, ease }} 
+          className="max-w-2xl"
+        >
           <h2 className="font-headline font-light text-2xl md:text-4xl leading-tight mb-4 md:mb-6 text-white">
             Marcas que constroem o <span className="text-secondary-container font-medium">futuro connosco</span>
           </h2>
@@ -489,7 +478,7 @@ const Partners = () => {
           <button className="w-full sm:w-auto bg-transparent border border-secondary-container/30 text-secondary-container px-6 py-3 rounded-xl text-[10px] md:text-xs font-bold tracking-wider uppercase hover:bg-secondary-container hover:text-white transition-all duration-300 cursor-pointer">
             Torne-se parceiro
           </button>
-        </div>
+        </motion.div>
       </div>
 
       {/* Infinite Carousel */}
@@ -517,7 +506,14 @@ const Partners = () => {
 
 const Footer = () => {
   return (
-    <footer className="bg-surface w-full border-t border-white/5">
+    <motion.footer 
+      initial="hidden" 
+      whileInView="visible" 
+      viewport={{ once: true }} 
+      variants={fadeUp} 
+      transition={{ duration: 0.6, ease }}
+      className="bg-surface w-full border-t border-white/5"
+    >
       <div className="flex flex-col md:flex-row justify-between items-center px-8 py-12 w-full max-w-7xl mx-auto">
         <div className="mb-6 md:mb-0">
           <div className="font-headline font-bold text-white text-xl mb-2">DINNAMIKUS</div>
@@ -551,7 +547,7 @@ const Footer = () => {
           </a>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 
@@ -564,7 +560,12 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-surface/90 backdrop-blur-md border border-white/10 rounded-2xl z-50 md:hidden shadow-2xl px-2 py-2">
+    <motion.nav 
+      initial={{ y: 100, x: '-50%', opacity: 0 }}
+      animate={{ y: 0, x: '-50%', opacity: 1 }}
+      transition={{ type: 'spring', damping: 20, stiffness: 100, delay: 0.5 }}
+      className="fixed bottom-6 left-1/2 w-[90%] max-w-[400px] bg-surface/90 backdrop-blur-md border border-white/10 rounded-2xl z-50 md:hidden shadow-2xl px-2 py-2"
+    >
       <div className="flex justify-around items-center">
         {navItems.map((item) => (
           <a 
@@ -578,12 +579,11 @@ const BottomNav = () => {
           </a>
         ))}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
 export default function LandingPage() {
-  useScrollReveal();
 
   return (
     <main className="min-h-screen bg-surface">
